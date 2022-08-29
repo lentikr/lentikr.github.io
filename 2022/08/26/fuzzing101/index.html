@@ -1,0 +1,249 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Fuzzing101完成记录 | lentikr's blog</title><meta name="keywords" content="fuzz,study"><meta name="author" content="lentikr"><meta name="copyright" content="lentikr"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="AFL++配置 如果过程中出现问题，很可能是网络不通畅导致  123456789101112# 安装依赖sudo apt-get updatesudo apt-get install -y build-essential python3-dev automake cmake git flex bison libglib2.0-dev libpixman-1-dev python3-setuptoo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fuzzing101完成记录">
+<meta property="og:url" content="http://lentikr.github.io/2022/08/26/fuzzing101/index.html">
+<meta property="og:site_name" content="lentikr&#39;s blog">
+<meta property="og:description" content="AFL++配置 如果过程中出现问题，很可能是网络不通畅导致  123456789101112# 安装依赖sudo apt-get updatesudo apt-get install -y build-essential python3-dev automake cmake git flex bison libglib2.0-dev libpixman-1-dev python3-setuptoo">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://lentikr.github.io/img/covers/fuzzing101.png">
+<meta property="article:published_time" content="2022-08-26T05:40:01.000Z">
+<meta property="article:modified_time" content="2022-08-29T05:13:24.291Z">
+<meta property="article:author" content="lentikr">
+<meta property="article:tag" content="fuzz">
+<meta property="article:tag" content="study">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://lentikr.github.io/img/covers/fuzzing101.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://lentikr.github.io/2022/08/26/fuzzing101/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Fuzzing101完成记录',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-08-29 13:13:24'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/covers/fuzzing101.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">lentikr's blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Fuzzing101完成记录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-08-26T05:40:01.000Z" title="发表于 2022-08-26 13:40:01">2022-08-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-08-29T05:13:24.291Z" title="更新于 2022-08-29 13:13:24">2022-08-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/fuzz/">fuzz</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.9k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="AFL-配置"><a href="#AFL-配置" class="headerlink" title="AFL++配置"></a>AFL++配置</h1><blockquote>
+<p>如果过程中出现问题，很可能是网络不通畅导致</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装依赖</span></span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install -y build-essential python3-dev automake cmake git flex bison libglib2.0-dev libpixman-1-dev python3-setuptools cargo libgtk-3-dev</span><br><span class="line">sudo apt-get install -y lld-12 llvm-12 llvm-12-dev clang-12</span><br><span class="line">sudo apt-get install -y gcc-$(gcc --version|<span class="built_in">head</span> -n1|sed <span class="string">&#x27;s/\..*//&#x27;</span>|sed <span class="string">&#x27;s/.* //&#x27;</span>)-plugin-dev libstdc++-$(gcc --version|<span class="built_in">head</span> -n1|sed <span class="string">&#x27;s/\..*//&#x27;</span>|sed <span class="string">&#x27;s/.* //&#x27;</span>)-dev</span><br><span class="line">sudo apt-get install -y ninja-build <span class="comment"># for QEMU mode</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建并安装AFLplusplus</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/AFLplusplus/AFLplusplus</span><br><span class="line"><span class="built_in">cd</span> AFLplusplus</span><br><span class="line">LLVM_CONFIG=llvm-config-12 make distrib</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+
+<h1 id="Exercise2"><a href="#Exercise2" class="headerlink" title="Exercise2"></a>Exercise2</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/unr4v31/p/15247691.html">https://www.cnblogs.com/unr4v31/p/15247691.html</a></p>
+<h2 id="完整流程"><a href="#完整流程" class="headerlink" title="完整流程"></a>完整流程</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建目录结构</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span></span><br><span class="line"><span class="built_in">mkdir</span> fuzzing_libexif &amp;&amp; <span class="built_in">cd</span> fuzzing_libexif/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载目标库</span></span><br><span class="line">wget https://github.com/libexif/libexif/archive/refs/tags/libexif-0_6_14-release.tar.gz</span><br><span class="line">tar -xzvf libexif-0_6_14-release.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="comment"># 插桩编译目标库</span></span><br><span class="line"><span class="built_in">cd</span> libexif-libexif-0_6_14-release/</span><br><span class="line">sudo apt-get install autopoint libtool gettext libpopt-dev</span><br><span class="line"><span class="built_in">export</span> LLVM_CONFIG=<span class="string">&quot;llvm-config-12&quot;</span></span><br><span class="line">autoreconf -fvi</span><br><span class="line">CC=afl-clang-lto ./configure --enable-shared=no --prefix=<span class="string">&quot;<span class="variable">$HOME</span>/fuzzing_libexif/install/&quot;</span></span><br><span class="line">make</span><br><span class="line">make install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 插桩安装一个使用目标库的应用程序</span></span><br><span class="line">wget https://github.com/libexif/exif/archive/refs/tags/exif-0_6_15-release.tar.gz</span><br><span class="line">tar -xzvf exif-0_6_15-release.tar.gz</span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span>/fuzzing_libexif/exif-exif-0_6_15-release</span><br><span class="line"><span class="built_in">export</span> LLVM_CONFIG=<span class="string">&quot;llvm-config-12&quot;</span></span><br><span class="line">autoreconf -fvi</span><br><span class="line">CC=afl-clang-lto ./configure --enable-shared=no --prefix=<span class="string">&quot;<span class="variable">$HOME</span>/fuzzing_libexif/install/&quot;</span> PKG_CONFIG_PATH=<span class="variable">$HOME</span>/fuzzing_libexif/install/lib/pkgconfig</span><br><span class="line">make</span><br><span class="line">make install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载输入用例</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span>/fuzzing_libexif</span><br><span class="line">wget https://github.com/ianare/exif-samples/archive/refs/heads/master.zip</span><br><span class="line">unzip exif-samples-master.zip</span><br><span class="line"><span class="comment">## 测试该应用能否正常运行</span></span><br><span class="line"><span class="variable">$HOME</span>/fuzzing_libexif/install/bin/exif <span class="variable">$HOME</span>/fuzzing_libexif/exif-samples-master/jpg/Canon_40D_photoshop_import.jpg</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行fuzz</span></span><br><span class="line">afl-fuzz -i <span class="variable">$HOME</span>/fuzzing_libexif/exif-samples-master/jpg/ -o <span class="variable">$HOME</span>/fuzzing_libexif/out/ -s 123 -- <span class="variable">$HOME</span>/fuzzing_libexif/install/bin/exif @@</span><br></pre></td></tr></table></figure>
+
+<h2 id="部分问题解决"><a href="#部分问题解决" class="headerlink" title="部分问题解决"></a>部分问题解决</h2><ul>
+<li><p>fuzz报错</p>
+<p><img src="https://lentikr-img.oss-cn-shanghai.aliyuncs.com/images/202208222025462.png"></p>
+<p>解决：将coredumps输出为文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo bash -c <span class="string">&#x27;echo core &gt;/proc/sys/kernel/core_pattern&#x27;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p><img src="https://lentikr-img.oss-cn-shanghai.aliyuncs.com/images/202208222030679.png">​</p>
+<h1 id="Exercise4"><a href="#Exercise4" class="headerlink" title="Exercise4"></a>Exercise4</h1><h2 id="完整流程-1"><a href="#完整流程-1" class="headerlink" title="完整流程"></a>完整流程</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建目录结构</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span></span><br><span class="line"><span class="built_in">mkdir</span> fuzzing_tiff &amp;&amp; <span class="built_in">cd</span> fuzzing_tiff/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载目标库</span></span><br><span class="line">wget https://download.osgeo.org/libtiff/tiff-4.0.4.tar.gz</span><br><span class="line">tar -xzvf tiff-4.0.4.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用--coverage标志编译目标库</span></span><br><span class="line"><span class="built_in">cd</span> tiff-4.0.4/</span><br><span class="line">CFLAGS=<span class="string">&quot;--coverage&quot;</span> LDFLAGS=<span class="string">&quot;--coverage&quot;</span> ./configure --prefix=<span class="string">&quot;<span class="variable">$HOME</span>/fuzzing_tiff/install/&quot;</span> --disable-shared</span><br><span class="line">make</span><br><span class="line">make install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行自带的tiffinfo应用程序并查看代码覆盖率</span></span><br><span class="line">sudo apt install lcov</span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span>/fuzzing_tiff/tiff-4.0.4/</span><br><span class="line"><span class="comment">## 重置计数器</span></span><br><span class="line">lcov --zerocounters --directory ./</span><br><span class="line"><span class="comment">## 记录原始代码覆盖</span></span><br><span class="line">lcov --capture --initial --directory ./ --output-file app.info</span><br><span class="line"><span class="comment">## 执行一次tiffinfo</span></span><br><span class="line"><span class="variable">$HOME</span>/fuzzing_tiff/install/bin/tiffinfo -D -j -c -r -s -w <span class="variable">$HOME</span>/fuzzing_tiff/tiff-4.0.4/test/images/palette-1c-1b.tiff</span><br><span class="line"><span class="comment">## 统计执行后的代码覆盖率</span></span><br><span class="line">lcov --no-checksum --directory ./ --capture --output-file app2.info</span><br><span class="line"><span class="comment">## 生成html输出</span></span><br><span class="line">genhtml --highlight --legend -output-directory ./html-coverage/ ./app2.info</span><br><span class="line"></span><br><span class="line"><span class="comment"># 清除上次使用--coverage标志的编译结果</span></span><br><span class="line"><span class="built_in">rm</span> -r <span class="variable">$HOME</span>/fuzzing_tiff/install</span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span>/fuzzing_tiff/tiff-4.0.4/</span><br><span class="line">make clean</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重新进行插桩编译并开启ASAN（快速内存错误检测）</span></span><br><span class="line"><span class="built_in">export</span> LLVM_CONFIG=<span class="string">&quot;llvm-config-12&quot;</span></span><br><span class="line">CC=afl-clang-lto ./configure --prefix=<span class="string">&quot;<span class="variable">$HOME</span>/fuzzing_tiff/install/&quot;</span> --disable-shared</span><br><span class="line">AFL_USE_ASAN=1 make -j4 <span class="comment"># 表示可以使用4核</span></span><br><span class="line">AFL_USE_ASAN=1 make install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 进行fuzz</span></span><br><span class="line">afl-fuzz -m none -i <span class="variable">$HOME</span>/fuzzing_tiff/tiff-4.0.4/test/images/ -o <span class="variable">$HOME</span>/fuzzing_tiff/out/ -s 123 -- <span class="variable">$HOME</span>/fuzzing_tiff/install/bin/tiffinfo -D -j -c -r -s -w @@</span><br></pre></td></tr></table></figure>
+
+<h2 id="结果-1"><a href="#结果-1" class="headerlink" title="结果"></a>结果</h2><p><img src="https://lentikr-img.oss-cn-shanghai.aliyuncs.com/images/202208222059000.png">​</p>
+<h1 id="Exercise6"><a href="#Exercise6" class="headerlink" title="Exercise6"></a>Exercise6</h1><h2 id="完整流程-2"><a href="#完整流程-2" class="headerlink" title="完整流程"></a>完整流程</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建目录结构</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span></span><br><span class="line"><span class="built_in">mkdir</span> Fuzzing_gimp &amp;&amp; <span class="built_in">cd</span> Fuzzing_gimp</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装依赖</span></span><br><span class="line">sudo apt-get install build-essential libatk1.0-dev libfontconfig1-dev libcairo2-dev libgudev-1.0-0 libdbus-1-dev libdbus-glib-1-dev libexif-dev libxfixes-dev libgtk2.0-dev python2.7-dev libpango1.0-dev libglib2.0-dev zlib1g-dev intltool libbabl-dev</span><br><span class="line">wget https://download.gimp.org/pub/gegl/0.2/gegl-0.2.0.tar.bz2</span><br><span class="line">tar xvf gegl-0.2.0.tar.bz2 &amp;&amp; <span class="built_in">cd</span> gegl-0.2.0</span><br><span class="line">sed -i <span class="string">&#x27;s/CODEC_CAP_TRUNCATED/AV_CODEC_CAP_TRUNCATED/g&#x27;</span> ./operations/external/ff-load.c</span><br><span class="line">sed -i <span class="string">&#x27;s/CODEC_FLAG_TRUNCATED/AV_CODEC_FLAG_TRUNCATED/g&#x27;</span> ./operations/external/ff-load.c</span><br><span class="line">./configure --enable-debug --disable-glibtest  --without-vala --without-cairo --without-pango --without-pangocairo --without-gdk-pixbuf --without-lensfun --without-libjpeg --without-libpng --without-librsvg --without-openexr --without-sdl --without-libopenraw --without-jasper --without-graphviz --without-lua --without-libavformat --without-libv4l --without-libspiro --without-exiv2 --without-umfpack</span><br><span class="line">make -j$(<span class="built_in">nproc</span>) <span class="comment"># 这两步有一些报错，导致后续gimp跑不起来</span></span><br><span class="line">sudo make install</span><br><span class="line"><span class="comment">## 上面gegl-0.2.0的安装有些问题，直接使用仓库提供的0.4版本</span></span><br><span class="line">sudo apt-get install libgegl-0.4-0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装GIMP</span></span><br><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line">wget https://mirror.klaus-uwe.me/gimp/pub/gimp/v2.8/gimp-2.8.16.tar.bz2</span><br><span class="line">tar xvf gimp-2.8.16.tar.bz2 &amp;&amp; <span class="built_in">cd</span> gimp-2.8.16/</span><br><span class="line"><span class="comment">## 根据https://github.com/antonio-morales/Fuzzing101/tree/main/Exercise%206中Persistent mode修改源代码</span></span><br><span class="line">CC=afl-clang-lto CXX=afl-clang-lto++ PKG_CONFIG_PATH=<span class="variable">$PKG_CONFIG_PATH</span>:<span class="variable">$HOME</span>/Fuzzing_gimp/gegl-0.2.0/ CFLAGS=<span class="string">&quot;-fsanitize=address&quot;</span> CXXFLAGS=<span class="string">&quot;-fsanitize=address&quot;</span> LDFLAGS=<span class="string">&quot;-fsanitize=address&quot;</span> ./configure --disable-gtktest --disable-glibtest --disable-alsatest --disable-nls --without-libtiff --without-libjpeg --without-bzip2 --without-gs --without-libpng --without-libmng --without-libexif --without-aa --without-libxpm --without-webkit --without-librsvg --without-print --without-poppler --without-cairo-pdf --without-gvfs --without-libcurl --without-wmf --without-libjasper --without-alsa --without-gudev --disable-python --enable-gimp-console --without-mac-twain --without-script-fu --without-gudev --without-dbus --disable-mp --without-linux-input --without-xvfb-run --with-gif-compression=none --without-xmc --with-shm=none --enable-debug  --prefix=<span class="string">&quot;<span class="variable">$HOME</span>/Fuzzing_gimp/gimp-2.8.16/install&quot;</span></span><br><span class="line">make -j$(<span class="built_in">nproc</span>)</span><br><span class="line">make install</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载输入用例</span></span><br><span class="line"><span class="built_in">mkdir</span> afl_in &amp;&amp; <span class="built_in">cd</span> afl_in</span><br><span class="line">wget https://github.com/antonio-morales/Fuzzing101/blob/main/Exercise%206/SampleInput.xcf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行fuzz</span></span><br><span class="line"><span class="comment">## 删除一些不需要的插件</span></span><br><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line"><span class="built_in">rm</span> ./install/lib/gimp/2.0/plug-ins/*</span><br><span class="line">ASAN_OPTIONS=detect_leaks=0,abort_on_error=1,symbolize=0 afl-fuzz -i <span class="string">&#x27;./afl_in&#x27;</span> -o <span class="string">&#x27;./afl_out&#x27;</span> -D -t 100 -- ./install/bin/gimp-console-2.8 --verbose -d -f @@</span><br></pre></td></tr></table></figure>
+
+<h2 id="部分问题解决-1"><a href="#部分问题解决-1" class="headerlink" title="部分问题解决"></a>部分问题解决</h2><ul>
+<li><p>缺少共享库文件导致fuzz跑不起来</p>
+<p><img src="https://lentikr-img.oss-cn-shanghai.aliyuncs.com/images/202208222154007.png"></p>
+<p>原因：GIMP依赖的gegl-0.2编译有些问题，导致缺少libgegl-0.2.so.0文件</p>
+<p>解决：不手动编译gegl-0.2，使用apt安装gegl-0.4→<code>sudo apt-get install libgegl-0.4-0</code></p>
+</li>
+<li><p>输入用例超时</p>
+<p><img src="https://lentikr-img.oss-cn-shanghai.aliyuncs.com/images/202208222159406.png"></p>
+<p>原因：输入用例的问题</p>
+<p>解决：自己使用gimp创建几个新项目，涂涂改改然后保存到afl++的输入文件夹中</p>
+</li>
+</ul>
+<h2 id="结果-2"><a href="#结果-2" class="headerlink" title="结果"></a>结果</h2><p><img src="https://lentikr-img.oss-cn-shanghai.aliyuncs.com/images/202208230847672.png"></p>
+<h1 id="Exercise8"><a href="#Exercise8" class="headerlink" title="Exercise8"></a>Exercise8</h1><ul>
+<li>fuzz没能跑起来</li>
+</ul>
+<h2 id="完整流程-3"><a href="#完整流程-3" class="headerlink" title="完整流程"></a>完整流程</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装依赖</span></span><br><span class="line">sudo apt-get install libxml2:i386</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装目标软件</span></span><br><span class="line">wget ftp://ftp.adobe.com/pub/adobe/reader/unix/9.x/9.5.1/enu/AdbeRdr9.5.1-1_i386linux_enu.deb</span><br><span class="line">sudo dpkg -i AdbeRdr9.5.1-1_i386linux_enu.deb</span><br><span class="line"><span class="comment">## 测试是否安装成功</span></span><br><span class="line">/opt/Adobe/Reader9/bin/acroread</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取输入用例</span></span><br><span class="line">wget https://corpora.tika.apache.org/base/packaged/pdfs/archive/pdfs_202002/libre_office.zip</span><br><span class="line">unzip libre_office.zip -d extracted</span><br><span class="line"><span class="built_in">mkdir</span> -p <span class="variable">$HOME</span>/fuzzing_adobe/afl_in</span><br><span class="line">find ./extracted -<span class="built_in">type</span> f -size -2k \</span><br><span class="line">    -<span class="built_in">exec</span> <span class="built_in">cp</span> &#123;&#125; <span class="variable">$HOME</span>/fuzzing_adobe/afl_in \;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启用persistent mode</span></span><br><span class="line">sudo apt-get install valgrind</span><br><span class="line">sudo apt-get install kcachegrind</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行fuzz</span></span><br><span class="line">ACRO_INSTALL_DIR=/opt/Adobe/Reader9/Reader ACRO_CONFIG=intellinux LD_LIBRARY_PATH=<span class="variable">$LD_LIBRARY_PATH</span>:<span class="string">&#x27;/opt/Adobe/Reader9/Reader/intellinux/lib&#x27;</span> afl-fuzz -Q -i ./afl_in/ -o ./afl_out/ -t 2000 -- /opt/Adobe/Reader9/Reader/intellinux/bin/acroread -toPostScript @@</span><br></pre></td></tr></table></figure>
+
+<h2 id="部分问题解决-2"><a href="#部分问题解决-2" class="headerlink" title="部分问题解决"></a>部分问题解决</h2><ul>
+<li><p>Adobe Reader安装报错</p>
+<p><img src="https://lentikr-img.oss-cn-shanghai.aliyuncs.com/images/202208230914987.png"></p>
+<p>原因：软件依赖损坏</p>
+<p>解决：执行下列指令后重新安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libgtk2.0</span><br><span class="line">sudo apt --fix-broken install</span><br></pre></td></tr></table></figure></li>
+<li><p>fuzz报错：<code>Fork server handshake failed</code></p>
+<p>原因：未知，尝试过设置<code>AFL_MAP_SIZE</code>无果，且程序本身可以单独运行</p>
+</li>
+</ul>
+<h1 id="Exercise10"><a href="#Exercise10" class="headerlink" title="Exercise10"></a>Exercise10</h1><ul>
+<li>环境搭建过程中有些问题没有解决</li>
+</ul>
+<h2 id="完整流程-4"><a href="#完整流程-4" class="headerlink" title="完整流程"></a>完整流程</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装依赖</span></span><br><span class="line">sudo apt --<span class="built_in">yes</span> install clang libpython2.7 libpython2.7-dev libcurl4 git</span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span></span><br><span class="line">wget https://swift.org/builds/swift-4.2.1-release/ubuntu1804/swift-4.2.1-RELEASE/swift-4.2.1-RELEASE-ubuntu18.04.tar.gz</span><br><span class="line">tar xzvf swift-4.2.1-RELEASE-ubuntu18.04.tar.gz</span><br><span class="line">sudo <span class="built_in">mv</span> swift-4.2.1-RELEASE-ubuntu18.04 /usr/share/swift</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;export PATH=/usr/share/swift/usr/bin:<span class="variable">$PATH</span>&quot;</span> &gt;&gt; ~/.bashrc</span><br><span class="line"><span class="built_in">source</span>  ~/.bashrc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装Fuzzilli</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span></span><br><span class="line">wget https://github.com/googleprojectzero/fuzzilli/archive/refs/tags/v0.9.zip</span><br><span class="line">unzip v0.9.zip</span><br><span class="line"><span class="built_in">cd</span> fuzzilli-0.9/</span><br><span class="line">swift build -c release -Xlinker=<span class="string">&#x27;-lrt&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装depot-tools</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span></span><br><span class="line"><span class="built_in">mkdir</span> depot_tools &amp;&amp; <span class="built_in">cd</span> depot_tools</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/yzgyyang/depot-tools</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;export PATH=`pwd`/depot-tools:<span class="variable">$PATH</span>&quot;</span> &gt;&gt; ~/.bashrc</span><br><span class="line"><span class="built_in">source</span>  ~/.bashrc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取V8源码</span></span><br><span class="line"><span class="built_in">cd</span> <span class="variable">$HOME</span></span><br><span class="line"><span class="built_in">mkdir</span> Fuzzing_v8_75 &amp;&amp; <span class="built_in">cd</span> Fuzzing_v8_75</span><br><span class="line">fetch v8</span><br><span class="line"><span class="built_in">cd</span> v8</span><br><span class="line">git checkout 1ca088652d3aad04caceb648bcffef100bc4abc0</span><br><span class="line">gclient <span class="built_in">sync</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="部分问题解决-3"><a href="#部分问题解决-3" class="headerlink" title="部分问题解决"></a>部分问题解决</h2><ul>
+<li><p>libcur13无法安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree   </span><br><span class="line">Reading state information... Done</span><br><span class="line">Package libcurl3 is not available, but is referred to by another package.</span><br><span class="line">This may mean that the package is missing, has been obsoleted, or</span><br><span class="line">is only available from another <span class="built_in">source</span></span><br><span class="line">However the following packages replace it:</span><br><span class="line">  libcurl4 libcurl4:i386</span><br><span class="line"></span><br><span class="line">E: Package <span class="string">&#x27;libcurl3&#x27;</span> has no installation candidate</span><br></pre></td></tr></table></figure>
+
+<p>原因：libcurl3与libcurl4存在冲突</p>
+<p>解决：不安装libcurl3</p>
+</li>
+<li><p><code>fetch v8</code>报错</p>
+<p><img src="https://lentikr-img.oss-cn-shanghai.aliyuncs.com/images/202208231536524.png"></p>
+<p>原因：下载的depot_tools有问题</p>
+<p>解决：更换depot_tools来源，使用<a target="_blank" rel="noopener" href="https://github.com/yzgyyang/depot-tools">https://github.com/yzgyyang/depot-tools</a>提供的depot-tools</p>
+</li>
+<li><p><code>fetch v8</code>克隆googlesource仓库连接失败</p>
+<p>原因：访问不到google</p>
+<p>解决：使用proxychains代理访问</p>
+</li>
+<li><p><code>gclient sync</code>可能出现了问题</p>
+<p><img src="https://lentikr-img.oss-cn-shanghai.aliyuncs.com/images/202208231604106.png"></p>
+<p>原因：未知，在此处等40分钟也无法通过</p>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://lentikr.github.io">lentikr</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://lentikr.github.io/2022/08/26/fuzzing101/">http://lentikr.github.io/2022/08/26/fuzzing101/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://lentikr.github.io" target="_blank">lentikr's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/fuzz/">fuzz</a><a class="post-meta__tags" href="/tags/study/">study</a></div><div class="post_share"><div class="social-share" data-image="/img/covers/fuzzing101.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2022/08/25/libafl/"><img class="next-cover" src="/img/covers/libafl.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">LibAFL入门</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/08/25/libafl/" title="LibAFL入门"><img class="cover" src="/img/covers/libafl.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-25</div><div class="title">LibAFL入门</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">lentikr</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/lentikr"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/lentikr" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:xja2001@163.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#AFL-%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">AFL++配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Exercise2"><span class="toc-number">2.</span> <span class="toc-text">Exercise2</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B"><span class="toc-number">2.1.</span> <span class="toc-text">完整流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E5%88%86%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="toc-number">2.2.</span> <span class="toc-text">部分问题解决</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C"><span class="toc-number">2.3.</span> <span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Exercise4"><span class="toc-number">3.</span> <span class="toc-text">Exercise4</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B-1"><span class="toc-number">3.1.</span> <span class="toc-text">完整流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C-1"><span class="toc-number">3.2.</span> <span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Exercise6"><span class="toc-number">4.</span> <span class="toc-text">Exercise6</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B-2"><span class="toc-number">4.1.</span> <span class="toc-text">完整流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E5%88%86%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3-1"><span class="toc-number">4.2.</span> <span class="toc-text">部分问题解决</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C-2"><span class="toc-number">4.3.</span> <span class="toc-text">结果</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Exercise8"><span class="toc-number">5.</span> <span class="toc-text">Exercise8</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B-3"><span class="toc-number">5.1.</span> <span class="toc-text">完整流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E5%88%86%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3-2"><span class="toc-number">5.2.</span> <span class="toc-text">部分问题解决</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Exercise10"><span class="toc-number">6.</span> <span class="toc-text">Exercise10</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B-4"><span class="toc-number">6.1.</span> <span class="toc-text">完整流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E5%88%86%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3-3"><span class="toc-number">6.2.</span> <span class="toc-text">部分问题解决</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/08/26/fuzzing101/" title="Fuzzing101完成记录"><img src="/img/covers/fuzzing101.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Fuzzing101完成记录"/></a><div class="content"><a class="title" href="/2022/08/26/fuzzing101/" title="Fuzzing101完成记录">Fuzzing101完成记录</a><time datetime="2022-08-26T05:40:01.000Z" title="发表于 2022-08-26 13:40:01">2022-08-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/08/25/libafl/" title="LibAFL入门"><img src="/img/covers/libafl.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LibAFL入门"/></a><div class="content"><a class="title" href="/2022/08/25/libafl/" title="LibAFL入门">LibAFL入门</a><time datetime="2022-08-25T02:51:19.000Z" title="发表于 2022-08-25 10:51:19">2022-08-25</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/covers/fuzzing101.png')"><div id="footer-wrap"><div class="copyright">&copy;2022 By lentikr</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (true){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',preloader.endLoading())</script><div class="js-pjax"></div></div></body></html>
